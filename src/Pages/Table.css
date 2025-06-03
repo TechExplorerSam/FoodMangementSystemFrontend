@@ -144,6 +144,23 @@ justify-content: center;
   
 
 }
+.table-search-section{
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-left: 12%;
+    padding-top: 2%;
+}
+.table-search-section input{
+    width: 500px;
+    padding: 10px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    margin-right: 10px;
+    height:40px;
+}
 .add-table-modal button {
   background-color: #505050;
   color: white;

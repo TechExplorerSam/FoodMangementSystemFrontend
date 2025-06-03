@@ -90,10 +90,45 @@ const removeTable = async (tableId) => {
     fetchTables();
   }
   , []);
+
+  const handleSearchTables = (event) => {
+    if (!event.target.value) {
+      fetchTables(); 
+      
+      return;
+    }
+    const searchQuery = event.target.value.toLowerCase();
+    const filteredTables = tables.filter(table => 
+      table.tableName.toLowerCase().includes(searchQuery) || 
+      table.tableNumber.toString().includes(searchQuery)
+    );
+    handlesubmitSearch(filteredTables);
+    console.log("Filtered tables:", filteredTables);
+   
+  }
+  const handlesubmitSearch = async (filteredtables) => {
+    try {
+      const response = await axios.get('https://foodmangementsystembackend.onrender.com/admin/tables/searchTables', { query: filteredtables });
+      console.log("Search results:", response.data);
+      setTables(response.data);
+    } catch (error) {
+      console.error("Error searching tables:", error);
+    }
+  if (filteredtables.length === 0) {
+      alert("No tables found matching your search criteria.");
+    } else {
+      setTables(filteredtables);
+    }
+  }
   return (
     <div  >
         <Sidebar />
+        <div className='table-search-section'>
+            <input type="text" placeholder="Search tables..." onChange={handleSearchTables} />
+           
+          </div>
         <div className="tables-container"  >
+          
             <h1>Tables</h1>
             <div className="table-list">
                 {tables.map((table) =>
