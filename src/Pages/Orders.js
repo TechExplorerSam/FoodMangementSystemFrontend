@@ -25,7 +25,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/admin/orders/getAllOrders');
+      const response = await axios.get('https://foodmangementsystembackend.onrender.com/admin/orders/getAllOrders');
       console.log("Fetched orders:", response.data);
       setOrders(response.data.data);
     } catch (error) {
@@ -40,7 +40,7 @@ const Orders = () => {
     const typeOfOrder=orders.find(order=>order._id===orderId).orderType;
     if(typeOfOrder==="Take Away"){
       try {
-        const response = await axios.put(`http://localhost:5001/admin/orders/updateOrderStatusIfTake-Away/${orderId}`, { status: newStatus });
+        const response = await axios.put(`https://foodmangementsystembackend.onrender.com/admin/orders/updateOrderStatusIfTake-Away/${orderId}`, { status: newStatus });
         console.log("Order updated successfully:", response.data);
         fetchOrders(); 
       } catch (error) {
