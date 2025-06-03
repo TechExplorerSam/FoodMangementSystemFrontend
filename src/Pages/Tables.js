@@ -30,9 +30,9 @@ useEffect(() => {
 
 const removeTable = async (tableId) => {
   try {
-    console.log(" Deleting table with ID:", tableId);
+    console.log("Deleting table with ID:", tableId);
 
-    await axios.delete(`https://foodmangementsystembackend.onrender.com/admin/tables/deleteTable/${tableId}`);
+    await axios.delete(`http://localhost:5001/admin/tables/deleteTable/${tableId}`);
     console.log("Table deletion successful");
 
     const filteredTables = tables.filter(table => table._id.toString() !== tableId.toString());
@@ -40,35 +40,36 @@ const removeTable = async (tableId) => {
 
     const updatedTables = filteredTables.map((table, index) => ({
       ...table,
+      tableName: `Table ${index + 1 < 10 ? `0${index + 1}` : index + 1}`,
       tableNumber: index + 1
     }));
-    console.log(" Updated Tables to send to backend:", updatedTables);
+    console.log("Updated Tables to send to backend:", updatedTables);
 
-   const response= await axios.put('https://foodmangementsystembackend.onrender.com/admin/tables/updateTableNumbers', {
+    const response = await axios.put('http://localhost:5001/admin/tables/updateTableNumbers', {
       tables: updatedTables
     });
-    console.log(" Response from backend after updating table numbers:", response.data);
-    console.log("Table numbers updated in DB");
+    console.log("Response from backend after updating table numbers:", response.data);
 
     const displayTables = updatedTables.map(table => ({
       ...table,
-      tableNumber: table.tableNumber < 10 ? `0${table.tableNumber}` : `${table.tableNumber}`
+      tableNumber: table.tableNumber
     }));
 
     setTables(displayTables);
-    alert("✅ Table removed and numbers re-sequenced");
+    alert("Table removed and numbers re-sequenced");
 
   } catch (error) {
-    console.error(" Error during table removal or renumbering:", error);
+    console.error("Error during table removal or renumbering:", error);
     alert("Something went wrong during deletion or updating numbers.");
     fetchTables(); 
   }
 };
 
 
+
   const fetchTables = async () => {
     try{
-      const response =axios.get('https://foodmangementsystembackend.onrender.com/admin/tables/getAllTables').then((res) => res.data);
+      const response =axios.get('http://localhost:5001/admin/tables/getAllTables').then((res) => res.data);
       const data = await response;
       
       console.log("Tables fetched:", data);
@@ -97,8 +98,8 @@ const removeTable = async (tableId) => {
             <div className="table-list">
                 {tables.map((table) =>
     <div key={table._id} className="table-card">
-      <h2>Table</h2>
-      <p>{table.tableName>10?table.tableNumber:`0${table.tableNumber}`}</p>
+      <h2> {table.tableName} </h2>
+      <p>{table.tableNumber>=10?table.tableNumber:`0${table.tableNumber}`}</p>
       <p id='table-count'>
         <span><img src='chair.png' alt="chair icon" /></span>
         {table.tablechaircount}
@@ -136,11 +137,11 @@ const removeTable = async (tableId) => {
         setTables([...tables, newTable]);
         const serverdata = {
           id: newTable.id,
-          name: tableName,
+          name: ((newTable.tableNumber)>10? `Table ${newTable.tableNumber}`:`Table 0${newTable.tableNumber}`)|| tableName ,
           tableNumber: newTable.tableNumber,
           chairsCount: parseInt(chairsCount, 10)
         };
-        axios.post('https://foodmangementsystembackend.onrender.com/admin/tables/addTable', serverdata)
+        axios.post('http://localhost:5001/admin/tables/addTable', serverdata)
           .then(response => {
             console.log("Table added successfully:", response.data);
             alert("Table added successfully");

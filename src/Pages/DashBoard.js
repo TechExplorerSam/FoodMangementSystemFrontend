@@ -55,7 +55,7 @@ const DashBoard = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const response = await axios.get('https://foodmangementsystembackend.onrender.com/admin/analytics/getAnalytics');
+        const response = await axios.get('http://localhost:5001/admin/analytics/getAnalytics');
         const data = response.data.data || defaultAnalytics;
         console.log("Analytics data:", data);
         setAnalytics(data);

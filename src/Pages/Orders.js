@@ -20,28 +20,43 @@ const Orders = () => {
     { id: "13", orderType: "Dine In", tableNumber: "05", status: "Ongoing: 4 Min", items: ['Double Cheeseburger', 'Apple Pie', 'Coca-Cola L'], time: "9:37 AM" },
    
   ]);
-
-  const handleStatusChange = (id, newStatus) => {
-    setOrders(prev =>
-      prev.map(order =>
-        order.id === id ? { ...order, status: newStatus } : order
-      )
-    );
-  };
+//The above one is a mock data for orders, We can remove it after fetching from backend
+  
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/orders');
-      setOrders(response.data);
+      const response = await axios.get('http://localhost:5001/admin/orders/getAllOrders');
+      console.log("Fetched orders:", response.data);
+      setOrders(response.data.data);
     } catch (error) {
       console.error('Error fetching orders:', error);
     }
   };
 
   useEffect(() => {
-    // fetchOrders();
+    fetchOrders();
   }, []);
-
+  const updateOrderIfTakeAway=async (orderId,newStatus)=>{
+    const typeOfOrder=orders.find(order=>order._id===orderId).orderType;
+    if(typeOfOrder==="Take Away"){
+      try {
+        const response = await axios.put(`http://localhost:5001/admin/orders/updateOrderStatusIfTake-Away/${orderId}`, { status: newStatus });
+        console.log("Order updated successfully:", response.data);
+        fetchOrders(); 
+      } catch (error) {
+        console.error('Error updating order:', error);
+      }
+    }
+  }
+const handleStatusChange = (id, newStatus) => {
+    updateOrderIfTakeAway(id, newStatus);
+    setOrders(prev =>
+      prev.map(order =>
+        order.id === id ? { ...order, status: newStatus } : order
+      )
+    );
+  };
+  //{`order-card ${order.orderType.replace(" ", "-").toLowerCase()}`||`order-card${order.status.replace(" ", "-").toLowerCase().includes('Take Away')}`}
   return (
     <div>
       <Sidebar />
@@ -49,7 +64,19 @@ const Orders = () => {
         <h1>Order Line</h1>
         <div className="orders-grid">
           {orders.map((order, index) => (
-            <div key={index} className={`order-card ${order.orderType.replace(" ", "-").toLowerCase()}`}>
+            
+<div
+  key={index}
+  className={`order-card ${
+    order.orderType === "Take Away"
+      ? "take-away"
+      : order.orderType === "Dine In" && order.status.includes("Ongoing")
+      ? "dine-in"
+      : order.status === "Served"
+      ? "done"
+      : ""
+  }`}
+>
               <div className="order-header">
                 <span>🍴 # {order.id}</span>
                 <div className="order-type">
@@ -57,7 +84,7 @@ const Orders = () => {
                   {order.orderType === "Take Away" && order.status === "Not Picked up" ? (
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
                     >
                       <option>Not Picked up</option>
                       <option>Picked Up</option>
@@ -76,9 +103,9 @@ const Orders = () => {
                 </ul>
               </div>
               <div className="order-footer">
-                {order.orderType === "Dine In" ? (
+                {order.orderType === "Dine In"&&(order.status=="Processing"||order.status.includes('Ongoing')) ? (
                   <button className="processing-btn">⌛ Processing</button>
-                ) : order.orderType === "Done" ? (
+                ) : order.status === "Done"||order.status=="Served" ? (
                   <button className="done-btn">✅ Order Done</button>
                 ) : (
                   <button className="takeaway-btn">📦 Order Done</button>

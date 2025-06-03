@@ -6,8 +6,8 @@ const ItemCard = ({ item, cart, onAdd, onRemove }) => {
 
   return (
     <div className="item-card">
-     <img src={`/${item.image}`} alt={item.name} />
-
+     {/* <img src={`/${item.image}`} alt={item.name} /> */}
+<img src={item.image} alt={item.name} />
       <div className="item-info">
         <h4>{item.name}</h4>
         <p>₹ {item.price}</p>

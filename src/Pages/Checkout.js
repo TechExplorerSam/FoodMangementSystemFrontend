@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import './CheckOut.css';
 import InstructionModal from '../Components/InstructionModal';
+import axios from 'axios';
 
 const Checkout = ({ cart, setCart, goBack }) => {
-  const [dineType, setDineType] = useState('Dine In');
+  const [dineType, setDineType] = useState('Dine-In');
   const [showModal, setShowModal] = useState(false);
   const [instructions, setInstructions] = useState('');
   const [customerDetails, setCustomerDetails] = useState({
-    name: 'Divya Sigatapu',
-    phone: '9109109109',
-    address: 'Flat no: 301, SVR Enclave, Hyper Nagar',
+    name: '',
+    phone: '',
+    address: '',
   });
   const handleQuantity = (index, action) => {
     const newCart = [...cart];
@@ -21,9 +22,63 @@ const Checkout = ({ cart, setCart, goBack }) => {
         newCart.splice(index, 1);
       }
     }
+    
     setCart(newCart);
   };
+const placeOrder = async () => {
+  if (cart.length === 0) {
+    alert('Your cart is empty. Please add items to your cart before placing an order.');
+    return;
+  }
 
+  const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const ItemsCount = cart.reduce((count, item) => count + item.quantity, 0);
+
+  const orderDetails = {
+    orderType: dineType, 
+    instructions,
+    items: cart.map(item => ({
+      itemName: item.name,
+      itemPrice: item.price,
+      quantity: item.quantity,
+      image: item.image,
+    })),
+    ItemsCount,
+    totalAmount,
+    orderStatus: 'Processing',
+    customerDetails: {
+      customerName: customerDetails.name,
+      customerPhone: customerDetails.phone,
+      customerAddress: customerDetails.address,
+    },
+  };
+
+  try {
+    console.log('Order Details Sent:', orderDetails);
+    const response = await axios.post('http://localhost:5001/custommers/placeOrder', orderDetails);
+    console.log('Order placed successfully:', response.data);
+    alert('Order placed successfully!');
+    handleOrderSuccess(); 
+    setCart([]);
+    setInstructions('');
+    setCustomerDetails({ name: '', phone: '', address: '' });
+  } catch (error) {
+    console.error('Error placing order:', error);
+    alert('Failed to place order. Please try again later.');
+  }
+};
+  
+    const handleOrderSuccess = () => {
+        alert('Order placed successfully!');
+        setCart([]);
+        setInstructions('');
+        setCustomerDetails({
+          customerName: '',
+          customerPhone: '',
+          customerAddress: '',
+        });
+        goBack();
+      };
   const removeItem = (index) => {
     const newCart = [...cart];
     newCart.splice(index, 1);
@@ -63,8 +118,8 @@ const Checkout = ({ cart, setCart, goBack }) => {
 
       <div className="dine-options">
         <button
-          className={dineType === 'Dine In' ? 'active' : ''}
-          onClick={() => setDineType('Dine In')}
+          className={dineType === 'Dine-In' ? 'active' : ''}
+          onClick={() => setDineType('Dine-In')}
         >
           Dine In
         </button>
@@ -95,6 +150,7 @@ const Checkout = ({ cart, setCart, goBack }) => {
           <input
             type="text"
             value={customerDetails.name}
+            placeholder='Enter your name'
             onChange={(e) => setCustomerDetails({ ...customerDetails, name: e.target.value })}
           />
         </label>
@@ -103,6 +159,7 @@ const Checkout = ({ cart, setCart, goBack }) => {
           <input
             type="text"
             value={customerDetails.phone}
+            placeholder='Enter your phone number'
             onChange={(e) => setCustomerDetails({ ...customerDetails, phone: e.target.value })}
           />
         </label>
@@ -115,13 +172,15 @@ const Checkout = ({ cart, setCart, goBack }) => {
 <img src="/Location.png" alt="Address Icon" />
   <input
             type="text"
-            value={customerDetails.address}
+            value={dineType === 'Dine-In' ? '' : customerDetails.address}
+            placeholder={dineType === 'Dine-In' ? 'Table Will be automatically assigned you only enter your name and phone' : 'Enter your address'}
             onChange={(e) => setCustomerDetails({ ...customerDetails, address: e.target.value })}
+            readOnly={dineType === 'Dine-In'}
           />
          </div>
       </div>
 
-      <button className="swipe-order-btn">➡️ Swipe to Order</button>
+      <button className="swipe-order-btn"onClick={placeOrder}>➡️ Swipe to Order</button>
 
       {showModal && (
         <InstructionModal
