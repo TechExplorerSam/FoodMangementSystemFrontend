@@ -54,7 +54,7 @@ const placeOrder = async () => {
 
   try {
     console.log('Order Details Sent:', orderDetails);
-    const response = await axios.post('http://localhost:5001/custommers/placeOrder', orderDetails);
+    const response = await axios.post('https://foodmangementsystembackend.onrender.com/custommers/placeOrder', orderDetails);
     console.log('Order placed successfully: And your table number is', response.data);
     alert(`Order placed successfully! Your table number is ${response.data.data.tableData.tableNumber}`);
     handleOrderSuccess(); 

@@ -57,7 +57,7 @@ const [allItems, setAllItems] = useState([]);
 
     const fetchFoodItems = async () => {
   try {
-    const response = await axios.get('http://localhost:5001/custommers/getAllFoodItemsForConsumers');
+    const response = await axios.get('https://foodmangementsystembackend.onrender.com/custommers/getAllFoodItemsForConsumers');
    const items = (response.data || []).map(item => ({
       id: item._id,
       name: item.FoodItemName,
@@ -89,7 +89,7 @@ const handleSearchChange = (e) => {
 
 const handlFoodItemSearch = async (query) => {
   try {
-    const response = await axios.get(`http://localhost:5001/custommers/searchFoodItems?FoodItemName=${query}`);
+    const response = await axios.get(`https://foodmangementsystembackend.onrender.com/custommers/searchFoodItems?FoodItemName=${query}`);
 ;
     const items = (response.data || []).map(item => ({
       id: item._id,
