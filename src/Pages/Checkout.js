@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import './CheckOut.css';
 import InstructionModal from '../Components/InstructionModal';
 import axios from 'axios';
-
 const Checkout = ({ cart, setCart, goBack }) => {
   const [dineType, setDineType] = useState('Dine-In');
   const [showModal, setShowModal] = useState(false);
@@ -55,7 +54,7 @@ const placeOrder = async () => {
 
   try {
     console.log('Order Details Sent:', orderDetails);
-    const response = await axios.post('https://foodmangementsystembackend.onrender.com/custommers/placeOrder', orderDetails);
+    const response = await axios.post('http://localhost:5001/custommers/placeOrder', orderDetails);
     console.log('Order placed successfully: And your table number is', response.data);
     alert(`Order placed successfully! Your table number is ${response.data.data.tableData.tableNumber}`);
     handleOrderSuccess(); 
@@ -67,7 +66,38 @@ const placeOrder = async () => {
     alert('Failed to place order. Please try again later.');
   }
 };
-  
+ const swipeStartX = useRef(null);
+const swipeEndX = useRef(null);
+
+const isMobile = window.innerWidth <= 768; 
+
+const handleTouchStart = (e) => {
+  swipeStartX.current = e.touches[0].clientX;
+};
+
+ const handleTouchEnd = (e) => {
+    swipeEndX.current = e.changedTouches[0].clientX;
+    const diff = swipeEndX.current - swipeStartX.current;
+
+    const dynamicIsMobile = window.innerWidth <= 768;
+
+    if (diff > 60 && dynamicIsMobile) {
+      console.log("Swipe detected! Placing order...");
+      placeOrder();
+    } else if (diff < 0) {
+      console.log("👈 Swiped left – not placing order.");
+    } else {
+      console.log("👉 Swipe too short");
+    }
+  };
+
+  const handleClick = () => {
+    const dynamicIsMobile = window.innerWidth <= 768;
+    if (!dynamicIsMobile) {
+      console.log("🖱️ Desktop click detected. Placing order.");
+      placeOrder();
+    }
+  };
     const handleOrderSuccess = () => {
         alert('Order placed successfully!');
         setCart([]);
@@ -180,7 +210,17 @@ const placeOrder = async () => {
          </div>
       </div>
 
-      <button className="swipe-order-btn"onClick={placeOrder}>➡️ Swipe to Order</button>
+    <button
+  className="swipe-order-btn"
+  onTouchStart={handleTouchStart}
+  onTouchEnd={handleTouchEnd}
+  onClick={
+   handleClick
+  }
+>
+  ➡️ Swipe to Order
+</button>
+
 
       {showModal && (
         <InstructionModal

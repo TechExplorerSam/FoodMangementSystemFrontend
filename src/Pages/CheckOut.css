@@ -123,10 +123,51 @@
   padding: 14px;
   font-size: 16px;
   border-radius: 50px;
-  background: #eee;
+  background: #f0f0f0;
   border: 1px solid #ccc;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  color: #333;
+  font-weight: bold;
+  transition: transform 0.3s ease;
 }
+
+.swipe-order-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  transform: skewX(-20deg);
+}
+
+.swipe-order-btn:hover::before {
+  animation: swipeShine 1.2s forwards;
+}
+
+@keyframes swipeShine {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+
+.swipe-order-btn:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+
 @media screen and (max-width: 600px) {
   .cart-item {
     flex-direction: column;

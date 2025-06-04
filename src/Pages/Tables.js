@@ -32,7 +32,7 @@ const removeTable = async (tableId) => {
   try {
     console.log("Deleting table with ID:", tableId);
 
-    await axios.delete(`https://foodmangementsystembackend.onrender.com/admin/tables/deleteTable/${tableId}`);
+    await axios.delete(`http://localhost:5001/admin/tables/deleteTable/${tableId}`);
     console.log("Table deletion successful");
 
     const filteredTables = tables.filter(table => table._id.toString() !== tableId.toString());
@@ -45,7 +45,7 @@ const removeTable = async (tableId) => {
     }));
     console.log("Updated Tables to send to backend:", updatedTables);
 
-    const response = await axios.put('https://foodmangementsystembackend.onrender.com/admin/tables/updateTableNumbers', {
+    const response = await axios.put('http://localhost:5001/admin/tables/updateTableNumbers', {
       tables: updatedTables
     });
     console.log("Response from backend after updating table numbers:", response.data);
@@ -69,7 +69,7 @@ const removeTable = async (tableId) => {
 
   const fetchTables = async () => {
     try{
-      const response =axios.get('https://foodmangementsystembackend.onrender.com/admin/tables/getAllTables').then((res) => res.data);
+      const response =axios.get('http://localhost:5001/admin/tables/getAllTables').then((res) => res.data);
       const data = await response;
       
       console.log("Tables fetched:", data);
@@ -108,7 +108,7 @@ const removeTable = async (tableId) => {
   }
   const handlesubmitSearch = async (filteredtables) => {
     try {
-      const response = await axios.get('https://foodmangementsystembackend.onrender.com/admin/tables/searchTables', { query: filteredtables });
+      const response = await axios.get('http://localhost:5001/admin/tables/searchTables', { query: filteredtables });
       console.log("Search results:", response.data);
       setTables(response.data);
     } catch (error) {
@@ -176,7 +176,7 @@ const removeTable = async (tableId) => {
           tableNumber: newTable.tableNumber,
           chairsCount: parseInt(chairsCount, 10)
         };
-        axios.post('https://foodmangementsystembackend.onrender.com/admin/tables/addTable', serverdata)
+        axios.post('http://localhost:5001/admin/tables/addTable', serverdata)
           .then(response => {
             console.log("Table added successfully:", response.data);
             alert("Table added successfully");
