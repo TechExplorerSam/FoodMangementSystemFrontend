@@ -126,7 +126,7 @@ useEffect(() => {
             { label: "TOTAL CHEF", value: analytics.totalChefs, icon: 'Chefs.png' },
             { label: "TOTAL REVENUE", value: `₹${analytics.totalRevenue}`, icon: 'Revenue.png' },
             { label: "TOTAL ORDERS", value: analytics.totalOrders, icon: 'Orders.png' },
-            { label: "TOTAL CLIENTS", value: analytics.totalClients, icon: 'Clients.png' }
+            { label: "TOTAL CLIENTS", value: analytics.totalCustomers, icon: 'Clients.png' }
           ].map((item, idx) => (
             <div className='card1' key={idx}>
               <img src={item.icon} alt={item.label} />
